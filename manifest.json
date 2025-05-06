@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "game_script",
+    "version": "1.0",
+    "content_scripts": [
+        {
+            "matches": [
+                "https://lolitalibrary.com/maomao/#",
+                "https://www.baidu.com/"
+            ],
+            "css": [
+                "alert.css"
+            ],
+            "js": [
+                "skyBtn-script.js"
+            ]
+        }
+    ]
+}
