@@ -1,7 +1,7 @@
 /*
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-06 16:11:44
- * @LastEditTime: 2025-05-06 21:44:08
+ * @LastEditTime: 2025-05-06 21:58:51
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 用来监听小猫观测天空按钮出现
  * @FilePath: /miao_scripts/skyBtn-script.js
@@ -150,7 +150,7 @@ function observeElementPresence(selector, onAppear, onDisappear) {
         }
 
         // 4. 监听元素自身被移除
-        const elementObserver = new MutationObserver((mutations, observer) => {
+        const elementObserver = new MutationObserver((observer) => {
             if (!document.contains(element)) {
                 handleElementDisappear();
                 observer.disconnect();
