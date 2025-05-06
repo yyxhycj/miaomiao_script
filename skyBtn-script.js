@@ -1,7 +1,7 @@
 /*
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-06 16:11:44
- * @LastEditTime: 2025-05-06 16:42:25
+ * @LastEditTime: 2025-05-06 17:00:04
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 用来监听小猫观测天空按钮出现
  * @FilePath: /miao_scripts/skyBtn-script.js
@@ -15,12 +15,13 @@ document.body.appendChild(alertBox);
 
 // 监听按钮变化
 const observeButton = () => {
-    const button = document.getElementById('su');
+    const button = document.getElementById('observeBtn');
+    cur_num = 0 // 记录点击次数
     if (button) {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.attributeName === 'value') {
-                    console.log('按钮文字变化:', button.value); // 在控制台输出变化
+                    console.log('按钮出现:', button); // 在控制台输出变化
 
                     // 显示提示框
                     alertBox.style.display = 'block';
@@ -28,11 +29,17 @@ const observeButton = () => {
                     setTimeout(() => {
                         alertBox.style.display = 'none';
                     }, 3000);
+
+                    // 点击按钮
+                    cur_num += 1
+                    button.click();
+                    console.log('按钮点击成功！', "出现次数：", cur_num);
                 }
             });
         });
         observer.observe(button, { attributes: true, attributeFilter: ['value'] });
     } else {
+        console.log('未找到按钮！');
         setTimeout(observeButton, 2000); // 轮询直到按钮加载
     }
 };

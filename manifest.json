@@ -5,8 +5,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://lolitalibrary.com/maomao/#",
-                "https://www.baidu.com/"
+                "https://lolitalibrary.com/maomao/*"
             ],
             "css": [
                 "alert.css"
