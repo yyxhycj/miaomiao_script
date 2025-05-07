@@ -30,7 +30,7 @@
 3. 查看控制台输出获取运行状态（F12 > Console）
 
 ## 开发说明
-```bash
+
 ## 项目结构
 
 ```
@@ -54,6 +54,7 @@ miao_scripts/
 chrome://extensions/ > 点击对应扩展的"检查视图背景页"
 
 # 修改样式后需要：
+```
 chrome.runtime.reload()
 ```
 

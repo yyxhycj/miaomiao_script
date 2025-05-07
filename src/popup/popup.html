@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>游戏脚本设置</title>
     <link rel="stylesheet" href="popup.css">
 </head>
+
 <body>
     <div class="container">
         <h1>游戏脚本设置</h1>
-        
+        <div class="setting-group">
+            <label>脚本功能:</label>
+            <button id="observeSkyButton">观测天空</button>
+            <button id="testButton">测试</button>
+        </div>
+
         <div class="setting-group">
             <label class="switch">
                 <input type="checkbox" id="autoPlayEnabled">
@@ -29,6 +36,7 @@
 
         <button id="saveSettings" class="save-button">保存设置</button>
     </div>
-    <script src="popup.js"></script>
+    <script type="module" src="popup.js"></script>
 </body>
+
 </html>

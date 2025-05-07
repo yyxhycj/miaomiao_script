@@ -1,4 +1,5 @@
 {
+    "type": "module",
     "manifest_version": 3,
     "name": "game_script",
     "version": "1.0",
@@ -26,6 +27,15 @@
         }
     ],
     "permissions": [
-        "storage"
+        "storage",
+        "tabs",
+        "activeTab",
+        "scripting"
+    ],
+    "host_permissions": [
+        "https://lolitalibrary.com/*",
+        "https://www.baidu.com/*",
+        "http://*/*",
+        "https://*/*"
     ]
 }

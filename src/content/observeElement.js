@@ -1,31 +1,30 @@
 /*
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-06 16:11:44
- * @LastEditTime: 2025-05-07 14:27:52
+ * @LastEditTime: 2025-05-07 19:16:13
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 用来监听小猫观测天空按钮出现
- * @FilePath: /miao_scripts/skyBtn-script.js
+ * @FilePath: /miao_scripts/src/content/observeElement.js
  */
-// ==================== 主功能 ====================
+
 // 创建提示框
 const alertBox = document.createElement('div');
 alertBox.className = 'alert-box';
 document.body.appendChild(alertBox);
 
 // 记录点击次数
-cur_num = 0
+let cur_num = 0;
 
 /**
  * 持续监听元素的出现和消失
- * @param {string} selector - 目标元素选择器（如 ".dynamic-element"）
+ * @param {string} selector - 目标元素选择器
  * @param {Function} onAppear - 元素出现时的回调
  * @param {Function} onDisappear - 元素消失时的回调（可选）
  */
 function observeElementPresence(selector, onAppear, onDisappear) {
     let currentElement = null;
-    let observer = null;
+    console.log('开始监听元素:', selector);
 
-    console.log('开始监听元素', { selector });
     // 监听元素出现
     function startObservation() {
         // 1. 检查元素是否已存在
@@ -35,31 +34,22 @@ function observeElementPresence(selector, onAppear, onDisappear) {
             return;
         }
 
-        console.log('持续监听元素', { selector });
-        // 2. 创建父级监听器
-        // <div id="observeButton"></div>
-        // rightColumn
-        const parentObserver = new MutationObserver((mutations) => {
+        // 2. 创建观察器
+        const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                try {
-                    mutation.addedNodes.forEach((node) => {
-                        if (node.nodeType === Node.ELEMENT_NODE) {
-                            const target = node.matches(selector) ? node : node.querySelector(selector);
-                            if (target && !currentElement) {
-                                handleElementAppear(target);
-                            }
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        const target = node.matches(selector) ? node : node.querySelector(selector);
+                        if (target && !currentElement) {
+                            handleElementAppear(target);
                         }
-                    });
-                } catch (error) {
-                    console.log('父级元素mutation', { mutation });
-                }
+                    }
+                });
             });
         });
-        console.log('最终父级元素', { parentObserver });
 
-        // 3. 监听整个文档（可根据需要缩小范围）
-
-        parentObserver.observe(document.body, {
+        // 3. 开始观察
+        observer.observe(document.body, {
             childList: true,
             subtree: true
         });
@@ -67,14 +57,13 @@ function observeElementPresence(selector, onAppear, onDisappear) {
 
     // 处理元素出现
     function handleElementAppear(element) {
-        // currentElement = element;
-        // console.log('检测到元素出现', { element });
+        currentElement = element;
+        console.log('检测到元素出现:', element);
         onAppear?.(element);
 
-        // do something with the element
         // 显示提示框
         alertBox.style.display = 'block';
-        alertBox.textContent = `检测到变化：${element.value}`;
+        alertBox.textContent = `检测到变化：${element.value || element.textContent}`;
         setTimeout(() => {
             alertBox.style.display = 'none';
         }, 3000);
@@ -83,75 +72,45 @@ function observeElementPresence(selector, onAppear, onDisappear) {
         try {
             cur_num += 1;
             element.click();
-            console.log('按钮点击成功! 当前次数：', cur_num)
+            console.log('按钮点击成功! 当前次数：', cur_num);
         } catch (error) {
-            console.error('按钮点击失败：', { error });
-        }
-
-        // 4. 监听元素自身被移除
-        const elementObserver = new MutationObserver((mutations, observer) => {
-            try {
-                if (!document.contains(element)) {
-                    observer.disconnect();
-                    handleElementDisappear(element);
-                }
-            } catch (error) {
-                console.log('监听元素自身被移除失败：', { error });
-                startObservation(); // 重新开始监听
-            }
-        });
-
-        // 5. 监听元素父级变化
-        if (element.parentElement) {
-            elementObserver.observe(element.parentElement, {
-                childList: true
-            });
-        } else {
-            console.info('元素没有父级，无法监听父级变化');
+            console.error('按钮点击失败：', error);
         }
     }
 
-    // 处理元素消失
-    function handleElementDisappear(element) {
-        onDisappear?.(element);
-        element = null;
-        // 6. 重启监听流程
-        startObservation();
-    }
-
-    // 启动初始监听
+    // 启动监听
     startObservation();
 }
 
 
 
-// 目标元素选择器
-const targetSelector = '#observeBtn';
+// // 目标元素选择器
+// const targetSelector = '#observeBtn';
 
-// 启动
-observeElementPresence(
-    targetSelector,
-    (element) => {
-        console.log('元素出现:', { element });
-    },
-    (element) => {
-        console.log('元素消失:', { element });
-    }
-);
+// // 启动
+// observeElementPresence(
+//     targetSelector,
+//     (element) => {
+//         console.log('元素出现:', { element });
+//     },
+//     (element) => {
+//         console.log('元素消失:', { element });
+//     }
+// );
 
-// 监听错误
-window.onerror = function (message, source, lineno, colno, error) {
-    console.log('出现报错, 重新监控');
-    observeElementPresence(
-        targetSelector,
-        (element) => {
-            console.log('元素出现:', { element });
-        },
-        (element) => {
-            console.log('元素消失:', { element });
-        }
-    );
-};
+// // 监听错误
+// window.onerror = function (message, source, lineno, colno, error) {
+//     console.log('出现报错, 重新监控');
+//     observeElementPresence(
+//         targetSelector,
+//         (element) => {
+//             console.log('元素出现:', { element });
+//         },
+//         (element) => {
+//             console.log('元素消失:', { element });
+//         }
+//     );
+// };
 
 
 // const testSelector = '#su';
@@ -175,3 +134,22 @@ window.onerror = function (message, source, lineno, colno, error) {
 //         document.body.innerHTML += '<div id=#su>测试元素</div>';
 //     }
 // }, 3000);
+
+// 监听来自popup的消息
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === 'observeElement') {
+        console.log('收到观察元素请求:', request.selector);
+        observeElementPresence(
+            request.selector,
+            (element) => {
+                console.log('元素出现:', element);
+                sendResponse({ status: 'success', message: '元素已找到并点击' });
+            },
+            (element) => {
+                console.log('元素消失:', element);
+                sendResponse({ status: 'error', message: '元素已消失' });
+            }
+        );
+        return true; // 保持消息通道开放
+    }
+});
