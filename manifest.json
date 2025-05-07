@@ -2,6 +2,14 @@
     "manifest_version": 3,
     "name": "game_script",
     "version": "1.0",
+    "action": {
+        "default_popup": "src/popup/popup.html",
+        "default_icon": {
+            "16": "src/assets/icons/icon16.png",
+            "48": "src/assets/icons/icon48.png",
+            "128": "src/assets/icons/icon128.png"
+        }
+    },
     "content_scripts": [
         {
             "matches": [
@@ -9,11 +17,15 @@
                 "https://www.baidu.com/*"
             ],
             "css": [
-                "alert.css"
+                "src/content/alert.css"
             ],
             "js": [
-                "skyBtn-script.js"
+                "src/content/main.js",
+                "src/content/observeElement.js"
             ]
         }
+    ],
+    "permissions": [
+        "storage"
     ]
 }

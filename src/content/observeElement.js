@@ -1,7 +1,7 @@
 /*
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-06 16:11:44
- * @LastEditTime: 2025-05-07 14:12:20
+ * @LastEditTime: 2025-05-07 14:27:52
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 用来监听小猫观测天空按钮出现
  * @FilePath: /miao_scripts/skyBtn-script.js
@@ -11,9 +11,6 @@
 const alertBox = document.createElement('div');
 alertBox.className = 'alert-box';
 document.body.appendChild(alertBox);
-
-// 目标元素选择器
-const targetSelector = '#observeBtn';
 
 // 记录点击次数
 cur_num = 0
@@ -71,7 +68,7 @@ function observeElementPresence(selector, onAppear, onDisappear) {
     // 处理元素出现
     function handleElementAppear(element) {
         // currentElement = element;
-        console.log('检测到元素出现', { element });
+        // console.log('检测到元素出现', { element });
         onAppear?.(element);
 
         // do something with the element
@@ -110,7 +107,7 @@ function observeElementPresence(selector, onAppear, onDisappear) {
                 childList: true
             });
         } else {
-            console.error('元素没有父级，无法监听父级变化');
+            console.info('元素没有父级，无法监听父级变化');
         }
     }
 
@@ -125,6 +122,11 @@ function observeElementPresence(selector, onAppear, onDisappear) {
     // 启动初始监听
     startObservation();
 }
+
+
+
+// 目标元素选择器
+const targetSelector = '#observeBtn';
 
 // 启动
 observeElementPresence(

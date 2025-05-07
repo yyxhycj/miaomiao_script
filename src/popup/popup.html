@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>游戏脚本设置</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <h1>游戏脚本设置</h1>
+        
+        <div class="setting-group">
+            <label class="switch">
+                <input type="checkbox" id="autoPlayEnabled">
+                <span class="slider"></span>
+            </label>
+            <span class="setting-label">启用自动游戏</span>
+        </div>
+
+        <div class="setting-group">
+            <label>延迟时间 (秒):</label>
+            <input type="number" id="delayTime" min="1" max="10" value="2">
+        </div>
+
+        <div class="setting-group">
+            <label>重试次数:</label>
+            <input type="number" id="retryCount" min="1" max="5" value="3">
+        </div>
+
+        <button id="saveSettings" class="save-button">保存设置</button>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

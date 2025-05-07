@@ -31,7 +31,26 @@
 
 ## 开发说明
 ```bash
-# 调试脚本
+## 项目结构
+
+```
+miao_scripts/
+├── src/
+│   ├── popup/          # 弹出界面相关文件
+│   │   ├── popup.html  # 设置界面
+│   │   ├── popup.css   # 界面样式
+│   │   └── popup.js    # 设置逻辑
+│   ├── content/        # 内容脚本
+│   │   ├── main.js     # 主要游戏逻辑
+│   │   ├── observeElement.js  # 元素观察器
+│   │   └── alert.css   # 提示样式
+│   └── assets/         # 静态资源
+│       └── icons/      # 扩展图标
+├── manifest.json       # 扩展配置文件
+└── README.md          # 项目说明
+```
+
+## 调试脚本
 chrome://extensions/ > 点击对应扩展的"检查视图背景页"
 
 # 修改样式后需要：
