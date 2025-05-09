@@ -1,7 +1,7 @@
 /*
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-07 15:31:20
- * @LastEditTime: 2025-05-07 19:05:00
+ * @LastEditTime: 2025-05-09 14:17:59
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 设置页面逻辑
  * @FilePath: /miao_scripts/src/popup/popup.js
@@ -13,98 +13,125 @@ console.log('popup.js 开始加载');
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOMContentLoaded 事件触发');
 
-    // 获取按钮元素
-    const observeSkyButton = document.getElementById('observeSkyButton');
-    const testButton = document.getElementById('testButton');
+    // 获取元素
+    const observeSkyEnabled = document.getElementById('observeSkyEnabled');
+    const testEnabled = document.getElementById('testEnabled');
+    const autoPlayEnabled = document.getElementById('autoPlayEnabled');
+    const delayTime = document.getElementById('delayTime');
+    const retryCount = document.getElementById('retryCount');
+    const saveSettings = document.getElementById('saveSettings');
+    const messageContainer = document.getElementById('messageContainer');
+    const statusContainer = document.getElementById('statusContainer');
 
-    console.log('按钮元素:', {
-        observeSkyButton: !!observeSkyButton,
-        testButton: !!testButton
+    // 加载所有保存的设置
+    chrome.storage.sync.get({
+        observeSkyEnabled: false,
+        testEnabled: false,
+        autoPlayEnabled: false,
+        delayTime: 2,
+        retryCount: 3
+    }, function (items) {
+        // 设置监控开关状态
+        observeSkyEnabled.checked = items.observeSkyEnabled;
+        testEnabled.checked = items.testEnabled;
+
+        // 设置游戏相关选项
+        autoPlayEnabled.checked = items.autoPlayEnabled;
+        delayTime.value = items.delayTime;
+        retryCount.value = items.retryCount;
+
+        // 如果之前已启用监控，自动开启
+        if (items.observeSkyEnabled) {
+            startObservation('#observeBtn', '天空按钮');
+        }
+        if (items.testEnabled) {
+            startObservation('#su', '测试按钮');
+        }
     });
 
-    // 添加观测天空按钮点击事件
-    if (observeSkyButton) {
-        observeSkyButton.addEventListener('click', async function () {
-            console.log('观测天空按钮被点击');
-            // 在页面上显示消息
-            const message = document.createElement('div');
-            message.textContent = '开始观察天空按钮...';
-            message.style.color = 'green';
-            message.style.marginTop = '10px';
-            document.body.appendChild(message);
-
-            try {
-                // 获取当前标签页
-                const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-                // 注入内容脚本
-                await chrome.scripting.executeScript({
-                    target: { tabId: tab.id },
-                    files: ['src/content/observeElement.js']
-                });
-
-                // 发送消息给content script
-                chrome.tabs.sendMessage(tab.id, {
-                    action: 'observeElement',
-                    selector: '#observeButton' // 要观察的元素选择器
-                }, response => {
-                    console.log('收到响应:', response);
-                    if (response && response.status === 'success') {
-                        message.textContent = response.message;
-                        message.style.color = 'green';
-                    } else {
-                        message.textContent = '未找到目标元素';
-                        message.style.color = 'red';
-                    }
-                });
-            } catch (error) {
-                console.error('执行脚本失败:', error);
-                message.textContent = '执行失败: ' + error.message;
-                message.style.color = 'red';
-            }
-        });
+    // 显示消息的通用函数
+    function showMessage(text, type = 'info') {
+        messageContainer.innerHTML = `<div style="padding:8px;margin-bottom:8px;border-radius:4px;background-color:${type === 'success' ? '#E8F5E9' : type === 'error' ? '#FFEBEE' : '#E3F2FD'};color:${type === 'success' ? '#4CAF50' : type === 'error' ? '#F44336' : '#2196F3'}">${text}</div>`;
     }
 
-    // 添加测试按钮点击事件
-    if (testButton) {
-        testButton.addEventListener('click', async function () {
-            console.log('测试按钮被点击');
-            // 在页面上显示消息
-            const message = document.createElement('div');
-            message.textContent = '开始测试...';
-            message.style.color = 'blue';
-            message.style.marginTop = '10px';
-            document.body.appendChild(message);
+    // 开始观察的函数
+    async function startObservation(selector, name) {
+        showMessage(`开始观察${name}...`, 'info');
+        try {
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['src/content/observeElement.js']
+            });
+            chrome.tabs.sendMessage(tab.id, {
+                action: 'observeElement',
+                selector: selector
+            }, response => {
+                showMessage(response?.status === 'success' ? `开始持续监控${name}` : `未找到${name}`, response?.status === 'success' ? 'success' : 'error');
+            });
+        } catch (error) {
+            showMessage('执行失败: ' + error.message, 'error');
+        }
+    }
 
-            try {
-                // 获取当前标签页
-                const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    // 观测天空开关事件
+    observeSkyEnabled.addEventListener('change', function () {
+        chrome.storage.sync.set({ observeSkyEnabled: this.checked });
+        if (this.checked) {
+            startObservation('#observeBtn', '天空按钮');
+        }
+    });
 
-                // 注入内容脚本
-                await chrome.scripting.executeScript({
-                    target: { tabId: tab.id },
-                    files: ['src/content/observeElement.js']
-                });
+    // 测试开关事件
+    testEnabled.addEventListener('change', function () {
+        chrome.storage.sync.set({ testEnabled: this.checked });
+        if (this.checked) {
+            startObservation('#su', '测试按钮');
+        }
+    });
 
-                // 发送消息给content script
-                chrome.tabs.sendMessage(tab.id, {
-                    action: 'observeElement',
-                    selector: '#su' // 百度搜索按钮，用于测试
-                }, response => {
-                    console.log('收到响应:', response);
-                    if (response && response.status === 'success') {
-                        message.textContent = response.message;
-                        message.style.color = 'blue';
-                    } else {
-                        message.textContent = '未找到测试元素';
-                        message.style.color = 'red';
-                    }
-                });
-            } catch (error) {
-                console.error('执行脚本失败:', error);
-                message.textContent = '执行失败: ' + error.message;
-                message.style.color = 'red';
+    // 自动游戏开关事件
+    autoPlayEnabled.addEventListener('change', async function () {
+        console.log('自动游戏开关状态改变:', this.checked);
+
+        // 保存设置
+        await chrome.storage.sync.set({ autoPlayEnabled: this.checked });
+        showMessage(`自动游戏已${this.checked ? '启用' : '禁用'}`, 'success');
+
+        // 获取当前标签页
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab) {
+            console.error('未找到当前标签页');
+            return;
+        }
+
+        // 先重新注入脚本
+        await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['src/content/observeElement.js']
+        });
+
+        // 通知内容脚本更新设置
+        chrome.tabs.sendMessage(tab.id, {
+            action: 'updateSettings',
+            settings: { autoPlayEnabled: this.checked }
+        }, response => {
+            console.log('设置更新响应:', response);
+            if (response?.status === 'success') {
+                showMessage('设置已同步到页面', 'success');
             }
         });
-    }
+    });
+
+    // 保存设置按钮事件
+    saveSettings.addEventListener('click', function () {
+        const settings = {
+            delayTime: parseInt(delayTime.value) || 2,
+            retryCount: parseInt(retryCount.value) || 3
+        };
+
+        chrome.storage.sync.set(settings, function () {
+            showMessage('设置已保存', 'success');
+        });
+    });
 });

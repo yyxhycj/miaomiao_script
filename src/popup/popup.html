@@ -1,40 +1,70 @@
+<!--
+ * @Author: liyanminghui@codeck.ai
+ * @Date: 2025-05-07 15:30:38
+ * @LastEditTime: 2025-05-09 14:29:43
+ * @LastEditors: liyanminghui@codeck.ai
+ * @Description: 
+ * @FilePath: /miao_scripts/src/popup/popup.html
+-->
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8">
-    <title>游戏脚本设置</title>
+    <title>设置</title>
     <link rel="stylesheet" href="popup.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>游戏脚本设置</h1>
-        <div class="setting-group">
-            <label>脚本功能:</label>
-            <button id="observeSkyButton">观测天空</button>
-            <button id="testButton">测试</button>
+        <h1>设置</h1>
+        <div class="status-container" id="statusContainer">
+            <!-- 状态信息将在这里显示 -->
         </div>
-
-        <div class="setting-group">
-            <label class="switch">
-                <input type="checkbox" id="autoPlayEnabled">
-                <span class="slider"></span>
-            </label>
-            <span class="setting-label">启用自动游戏</span>
+        <div class="monitor-settings">
+            <h2>监控设置</h2>
+            <div class="switch-container">
+                <div class="switch-group">
+                    <label class="switch">
+                        <input type="checkbox" id="observeSkyEnabled">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switch-label">观测天空</span>
+                </div>
+                <div class="switch-group">
+                    <label class="switch">
+                        <input type="checkbox" id="testEnabled">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switch-label">测试模式</span>
+                </div>
+            </div>
         </div>
+        <div class="game-settings">
+            <h2>游戏设置</h2>
+            <div class="setting-group">
+                <label class="switch">
+                    <input type="checkbox" id="autoPlayEnabled">
+                    <span class="slider"></span>
+                </label>
+                <span class="setting-label">启用自动游戏</span>
+            </div>
 
-        <div class="setting-group">
-            <label>延迟时间 (秒):</label>
-            <input type="number" id="delayTime" min="1" max="10" value="2">
-        </div>
+            <div class="setting-group">
+                <label>延迟时间 (秒):</label>
+                <input type="number" id="delayTime" min="1" max="10" value="2">
+            </div>
 
-        <div class="setting-group">
-            <label>重试次数:</label>
-            <input type="number" id="retryCount" min="1" max="5" value="3">
+            <div class="setting-group">
+                <label>重试次数:</label>
+                <input type="number" id="retryCount" min="1" max="5" value="3">
+            </div>
         </div>
 
         <button id="saveSettings" class="save-button">保存设置</button>
+        <div class="message-container" id="messageContainer">
+            <!-- 消息将在这里显示 -->
+        </div>
     </div>
     <script type="module" src="popup.js"></script>
 </body>
