@@ -93,10 +93,30 @@ document.addEventListener('DOMContentLoaded', function () {
     // 自动游戏开关事件
     autoPlayEnabled.addEventListener('change', async function () {
         console.log('自动游戏开关状态改变:', this.checked);
+        updateGameSettings();
+    });
+
+    // 延迟时间设置事件
+    delayTime.addEventListener('change', function() {
+        updateGameSettings();
+    });
+
+    // 重试次数设置事件
+    retryCount.addEventListener('change', function() {
+        updateGameSettings();
+    });
+
+    // 更新游戏设置的通用函数
+    async function updateGameSettings() {
+        const settings = {
+            autoPlayEnabled: autoPlayEnabled.checked,
+            delayTime: parseInt(delayTime.value),
+            retryCount: parseInt(retryCount.value)
+        };
 
         // 保存设置
-        await chrome.storage.sync.set({ autoPlayEnabled: this.checked });
-        showMessage(`自动游戏已${this.checked ? '启用' : '禁用'}`, 'success');
+        await chrome.storage.sync.set(settings);
+        showMessage('游戏设置已更新', 'success');
 
         // 获取当前标签页
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -114,14 +134,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // 通知内容脚本更新设置
         chrome.tabs.sendMessage(tab.id, {
             action: 'updateSettings',
-            settings: { autoPlayEnabled: this.checked }
+            settings: settings
         }, response => {
             console.log('设置更新响应:', response);
             if (response?.status === 'success') {
                 showMessage('设置已同步到页面', 'success');
             }
         });
-    });
+    }
 
     // 保存设置按钮事件
     saveSettings.addEventListener('click', function () {

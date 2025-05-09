@@ -43,7 +43,8 @@ function observeElementPresence(selector) {
     let currentElement = null;
 
     async function handleElementAppear(element) {
-        if (!currentElement) {
+        // 检查元素是否发生变化
+        if (currentElement !== element) {
             currentElement = element;
             console.log('检测到元素:', element);
 
@@ -69,11 +70,25 @@ function observeElementPresence(selector) {
                     window.miaomiaoState.clickCount++;
                     element.click();
                     console.log('点击成功，次数:', window.miaomiaoState.clickCount);
+                    
+                    // 检查是否超过重试次数
+                    if (window.miaomiaoState.clickCount >= window.miaomiaoState.settings.retryCount) {
+                        console.log('已达到最大重试次数:', window.miaomiaoState.settings.retryCount);
+                        window.miaomiaoState.clickCount = 0; // 重置计数
+                    }
+                    
+                    // 点击后重置 currentElement，允许再次点击
+                    setTimeout(() => {
+                        currentElement = null;
+                        console.log('重置状态，准备下一次点击');
+                    }, window.miaomiaoState.settings.delayTime); // 使用设置的延迟时间
                 } catch (error) {
                     console.error('点击失败:', error);
+                    currentElement = null; // 失败时也重置
                 }
             } else {
                 console.log('自动游戏未启用，跳过点击');
+                currentElement = null; // 未启用时也重置
             }
         }
     }
@@ -106,70 +121,84 @@ function observeElementPresence(selector) {
 
 // 初始化函数
 async function initialize() {
-    // 加载存储的设置
-    console.log('开始加载设置...');
-    chrome.storage.sync.get({
-        observeSkyEnabled: false,
-        testEnabled: false,
-        autoPlayEnabled: false,
-        delayTime: 2,
-        retryCount: 3
-    }, function (items) {
-        console.log('加载到的设置:', items);
-        // 更新状态
-        window.miaomiaoState.settings = {
-            ...window.miaomiaoState.settings,
-            observeSkyEnabled: items.observeSkyEnabled,
-            testEnabled: items.testEnabled,
-            autoPlayEnabled: items.autoPlayEnabled,
-            delayTime: items.delayTime * 1000,
-            retryCount: items.retryCount
-        };
-        console.log('更新后的状态:', state.settings);
+    console.log('脚本开始初始化...');
 
-        // 如果之前已启用监控，自动开启
+    // 加载存储的设置
+    const items = await new Promise(resolve => {
+        chrome.storage.sync.get({
+            observeSkyEnabled: false,
+            testEnabled: false,
+            autoPlayEnabled: false,
+            delayTime: 2,
+            retryCount: 3
+        }, resolve);
+    });
+
+    console.log('加载到的设置:', items);
+
+    // 更新状态
+    window.miaomiaoState.settings = {
+        ...window.miaomiaoState.settings,
+        observeSkyEnabled: items.observeSkyEnabled,
+        testEnabled: items.testEnabled,
+        autoPlayEnabled: items.autoPlayEnabled,
+        delayTime: items.delayTime * 1000,
+        retryCount: items.retryCount
+    };
+
+    console.log('初始化状态:', window.miaomiaoState.settings);
+
+    // 自动启动监控
+    if (window.location.hostname === 'lolitalibrary.com') {
+        console.log('在游戏页面中，启动监控...');
         if (items.observeSkyEnabled) {
+            console.log('开始监控天空按钮');
             observeElementPresence('#observeBtn');
         }
+    } else if (window.location.hostname === 'www.baidu.com') {
+        console.log('在测试页面中，启动监控...');
         if (items.testEnabled) {
+            console.log('开始监控测试按钮');
             observeElementPresence('#su');
         }
-    });
+    }
 
     // 监听存储变化
     chrome.storage.onChanged.addListener(function (changes, namespace) {
         if (namespace === 'sync') {
+            console.log('检测到设置变化:', changes);
+            
+            // 更新状态
             Object.entries(changes).forEach(([key, { newValue }]) => {
-                switch (key) {
-                    case 'observeSkyEnabled':
-                        window.miaomiaoState.settings.observeSkyEnabled = newValue;
-                        if (newValue) {
-                            observeElementPresence('#observeBtn');
-                        } else if (window.miaomiaoState.observers.has('#observeBtn')) {
-                            window.miaomiaoState.observers.get('#observeBtn').disconnect();
-                            window.miaomiaoState.observers.delete('#observeBtn');
-                        }
-                        break;
-                    case 'testEnabled':
-                        window.miaomiaoState.settings.testEnabled = newValue;
-                        if (newValue) {
-                            observeElementPresence('#su');
-                        } else if (window.miaomiaoState.observers.has('#su')) {
-                            window.miaomiaoState.observers.get('#su').disconnect();
-                            window.miaomiaoState.observers.delete('#su');
-                        }
-                        break;
-                    case 'autoPlayEnabled':
-                        window.miaomiaoState.settings.autoPlayEnabled = newValue;
-                        break;
-                    case 'delayTime':
-                        window.miaomiaoState.settings.delayTime = newValue * 1000;
-                        break;
-                    case 'retryCount':
-                        window.miaomiaoState.settings.retryCount = newValue;
-                        break;
-                }
+                window.miaomiaoState.settings[key] = key === 'delayTime' ? newValue * 1000 : newValue;
             });
+
+            // 根据当前页面处理监控状态
+            if (window.location.hostname === 'lolitalibrary.com') {
+                if ('observeSkyEnabled' in changes) {
+                    if (changes.observeSkyEnabled.newValue) {
+                        console.log('开始监控天空按钮');
+                        observeElementPresence('#observeBtn');
+                    } else if (window.miaomiaoState.observers.has('#observeBtn')) {
+                        console.log('停止监控天空按钮');
+                        window.miaomiaoState.observers.get('#observeBtn').disconnect();
+                        window.miaomiaoState.observers.delete('#observeBtn');
+                    }
+                }
+            } else if (window.location.hostname === 'www.baidu.com') {
+                if ('testEnabled' in changes) {
+                    if (changes.testEnabled.newValue) {
+                        console.log('开始监控测试按钮');
+                        observeElementPresence('#su');
+                    } else if (window.miaomiaoState.observers.has('#su')) {
+                        console.log('停止监控测试按钮');
+                        window.miaomiaoState.observers.get('#su').disconnect();
+                        window.miaomiaoState.observers.delete('#su');
+                    }
+                }
+            }
+
+            console.log('更新后的状态:', window.miaomiaoState.settings);
         }
     });
 }

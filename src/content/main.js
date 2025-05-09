@@ -1,7 +1,7 @@
 /*
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-07 14:29:19
- * @LastEditTime: 2025-05-07 17:15:39
+ * @LastEditTime: 2025-05-09 15:11:11
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 主功能脚本
  * @FilePath: /miao_scripts/src/content/main.js
@@ -53,6 +53,7 @@
 //     }
 // );
 
+// const testSelector = '#su';
 
 // // 每隔 3 秒切换元素状态
 // setInterval(() => {
