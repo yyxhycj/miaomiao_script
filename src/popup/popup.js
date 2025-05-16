@@ -1,7 +1,7 @@
 /*
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-07 15:31:20
- * @LastEditTime: 2025-05-09 14:17:59
+ * @LastEditTime: 2025-05-09 15:46:09
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 设置页面逻辑
  * @FilePath: /miao_scripts/src/popup/popup.js
@@ -15,24 +15,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 获取元素
     const observeSkyEnabled = document.getElementById('observeSkyEnabled');
+    const sendHunterEnabled = document.getElementById('sendHunterEnabled');
     const testEnabled = document.getElementById('testEnabled');
     const autoPlayEnabled = document.getElementById('autoPlayEnabled');
     const delayTime = document.getElementById('delayTime');
     const retryCount = document.getElementById('retryCount');
-    const saveSettings = document.getElementById('saveSettings');
     const messageContainer = document.getElementById('messageContainer');
     const statusContainer = document.getElementById('statusContainer');
+    const saveSettings = document.getElementById('saveSettings');
 
     // 加载所有保存的设置
     chrome.storage.sync.get({
         observeSkyEnabled: false,
+        sendHunterEnabled: false,
         testEnabled: false,
         autoPlayEnabled: false,
         delayTime: 2,
         retryCount: 3
     }, function (items) {
-        // 设置监控开关状态
+        // 设置监控选项
         observeSkyEnabled.checked = items.observeSkyEnabled;
+        sendHunterEnabled.checked = items.sendHunterEnabled;
         testEnabled.checked = items.testEnabled;
 
         // 设置游戏相关选项
@@ -43,6 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // 如果之前已启用监控，自动开启
         if (items.observeSkyEnabled) {
             startObservation('#observeBtn', '天空按钮');
+        }
+        if (items.sendHunterEnabled) {
+            startObservation('#fastHuntContainer', '猎人按钮');
         }
         if (items.testEnabled) {
             startObservation('#su', '测试按钮');
@@ -82,6 +88,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // 派出猎人开关事件
+    sendHunterEnabled.addEventListener('change', function () {
+        chrome.storage.sync.set({ sendHunterEnabled: this.checked });
+        if (this.checked) {
+            startObservation('#sendHunterBtn', '猎人按钮');
+        }
+    });
+
     // 测试开关事件
     testEnabled.addEventListener('change', function () {
         chrome.storage.sync.set({ testEnabled: this.checked });
@@ -97,12 +111,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // 延迟时间设置事件
-    delayTime.addEventListener('change', function() {
+    delayTime.addEventListener('change', function () {
         updateGameSettings();
     });
 
     // 重试次数设置事件
-    retryCount.addEventListener('change', function() {
+    retryCount.addEventListener('change', function () {
         updateGameSettings();
     });
 
