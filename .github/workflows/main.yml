@@ -5,17 +5,13 @@ on:
   push:
     branches: [ "main" ] # 直接推送到 master 时触发
   pull_request:
-    types: [ closed ] # 监听 PR 关闭事件
+    types: [ opened, synchronize ] # 监听 PR 创建和更新事件
     branches: [ "main" ] # 仅针对目标分支是 master 的 PR
 
 jobs:
   build:
     name: Verify Build
     runs-on: ubuntu-latest
-    # 仅在 PR 合并时执行（避免未合并的关闭也触发）
-    if: |
-      startsWith(github.ref, 'refs/heads/main') ||
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

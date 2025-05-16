@@ -1,7 +1,7 @@
 /*
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-06 16:11:44
- * @LastEditTime: 2025-05-09 14:23:00
+ * @LastEditTime: 2025-05-16 15:37:34
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 用来监听小猫观测天空按钮出现
  * @FilePath: /miao_scripts/src/content/observeElement.js
@@ -202,6 +202,9 @@ async function initialize() {
         }
     });
 }
+
+
+
 
 // 监听来自 popup 的消息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
