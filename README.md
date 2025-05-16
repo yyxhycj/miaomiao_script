@@ -1,7 +1,7 @@
 <!--
  * @Author: liyanminghui@codeck.ai
  * @Date: 2025-05-06 17:25:02
- * @LastEditTime: 2025-05-16 15:19:54
+ * @LastEditTime: 2025-05-16 15:27:40
  * @LastEditors: liyanminghui@codeck.ai
  * @Description: 
  * @FilePath: /miao_scripts/README.md
@@ -66,9 +66,6 @@ chrome.runtime.reload()
 
 ## 许可证
 MIT License
-
-
-
 
 Copyright (c) 2024 Your Name
 
