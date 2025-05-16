@@ -3,10 +3,10 @@ name: Go Build Check
 on:
   # 监听合并到 master 的两种方式：
   push:
-    branches: [ "master" ] # 直接推送到 master 时触发
+    branches: [ "main" ] # 直接推送到 master 时触发
   pull_request:
     types: [ closed ] # 监听 PR 关闭事件
-    branches: [ "master" ] # 仅针对目标分支是 master 的 PR
+    branches: [ "main" ] # 仅针对目标分支是 master 的 PR
 
 jobs:
   build:
