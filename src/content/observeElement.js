@@ -70,13 +70,13 @@ function observeElementPresence(selector) {
                     window.miaomiaoState.clickCount++;
                     element.click();
                     console.log('点击成功，次数:', window.miaomiaoState.clickCount);
-                    
+
                     // 检查是否超过重试次数
                     if (window.miaomiaoState.clickCount >= window.miaomiaoState.settings.retryCount) {
                         console.log('已达到最大重试次数:', window.miaomiaoState.settings.retryCount);
                         window.miaomiaoState.clickCount = 0; // 重置计数
                     }
-                    
+
                     // 点击后重置 currentElement，允许再次点击
                     setTimeout(() => {
                         currentElement = null;
@@ -167,7 +167,7 @@ async function initialize() {
     chrome.storage.onChanged.addListener(function (changes, namespace) {
         if (namespace === 'sync') {
             console.log('检测到设置变化:', changes);
-            
+
             // 更新状态
             Object.entries(changes).forEach(([key, { newValue }]) => {
                 window.miaomiaoState.settings[key] = key === 'delayTime' ? newValue * 1000 : newValue;
@@ -206,11 +206,11 @@ async function initialize() {
 // 监听来自 popup 的消息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     console.log('收到消息:', request);
-    
+
     if (request.action === 'observeElement') {
         observeElementPresence(request.selector);
         sendResponse({ status: 'success' });
-    } 
+    }
     else if (request.action === 'updateSettings') {
         console.log('收到设置更新:', request.settings);
         // 直接更新状态
@@ -218,7 +218,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         console.log('更新后的状态:', window.miaomiaoState.settings);
         sendResponse({ status: 'success' });
     }
-    
+
     return true;
 });
 
